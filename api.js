@@ -465,9 +465,9 @@ app.post("/GetClientsDetailsAllServices", validarIPyToken, async (req, res) => {
   res.json(cliente);
 });
 
-app.post("/consulta-cedula", async (req, res) => {
-  console.log("Petición a /consulta-cedula", req.body);
-  const cedula = req.body?.Cedula || req.body?.cedula || null;
+app.get("/consulta-cedula/:cedula", async (req, res) => {
+  console.log("Petición a /consulta-cedula", req.params);
+  const cedula = req.params?.cedula || null;
 
   if (!cedula) {
     return res.status(400).json({ error: "Cedula es requerida" });

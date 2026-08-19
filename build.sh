@@ -1,7 +1,14 @@
 export DOCKER_IMAGE_VERSION="dev_$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1)"
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [ -f "$SCRIPT_DIR/.env.docker" ]; then
+  set -a
+  source "$SCRIPT_DIR/.env.docker"
+  set +a
+fi
+
 if [ -z "$DOCKER_USER" ] || [ -z "$DOCKER_PASS" ]; then
-  echo "Error: define las variables de entorno DOCKER_USER y DOCKER_PASS antes de ejecutar este script."
+  echo "Error: define DOCKER_USER y DOCKER_PASS en un archivo .env.docker (junto a build.sh) o como variables de entorno."
   exit 1
 fi
 
