@@ -2,6 +2,10 @@ FROM node:alpine
 
 WORKDIR /soap
 
+RUN apk add --no-cache tzdata
+
+ENV TZ=America/Guayaquil
+
 COPY server.js ./
 
 COPY consulta.wsdl ./

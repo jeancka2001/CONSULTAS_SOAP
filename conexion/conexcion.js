@@ -20,7 +20,7 @@ if (!process.env.DB_HOST || !process.env.DB_USER || !process.env.DB_PASS || !pro
 
 // Crea una conexión a tu base de datos
 const pool = mysql.createPool({
-  port:25061,
+  port: Number(process.env.DB_PORT) || 25061,
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASS,

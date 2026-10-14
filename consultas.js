@@ -1594,7 +1594,7 @@ const RealizarPago = async (
             pasarela: pasarela,
             cantidad: items.Valor_Pagado,
             idtransaccion: idtransaccion,
-            nota: `${moment().format("YYYYMMDDHHMMSS")} / ${idtransaccion}`,
+            nota: `${moment().format("YYYYMMDDHHmmss")} / ${idtransaccion}`,
           }
         );
         console.log("data: ", data);

@@ -4,6 +4,8 @@ const morgan = require("morgan");
 const axios = require("axios");
 const fs = require("fs");
 const path = require("path");
+const swaggerUi = require("swagger-ui-express");
+const openapiSpec = require("./docs/openapi");
 
 const {
   ConsultarNombreCliente,
@@ -66,6 +68,19 @@ app.use(express.urlencoded({ extended: true }));
 app.set("trust proxy", true);
 
 require("dotenv").config(); // asegúrate de tener dotenv configurado
+
+// Documentación Swagger (desactivar con DOCS_ENABLED=false)
+if (process.env.DOCS_ENABLED !== "false") {
+  app.get("/docs/openapi.json", (req, res) => res.json(openapiSpec));
+  app.use(
+    "/docs",
+    swaggerUi.serve,
+    swaggerUi.setup(openapiSpec, {
+      customSiteTitle: "API Consultas - Docs",
+      swaggerOptions: { persistAuthorization: true, displayRequestDuration: true },
+    })
+  );
+}
 
 let WHITELIST_IPS = [];
 let TENANTS_CONFIG = { default: {} };
@@ -1672,7 +1687,8 @@ app.get("/tenant/config", validarIPyToken, async (req, res) => {
 
 
 
-app.post("/EnviarCorreo", validarIPyToken, async (req, res) => {
+// Sin validación de IP: accesible desde cualquier IP, pero sigue requiriendo token
+app.post("/EnviarCorreo", [validarToken, resolverTenant], async (req, res) => {
   const { from, to, subject, text, html } = req.body;
   if (!to) return res.status(400).json({ ok: false, message: "El campo 'to' es requerido" });
   const cfg = req.tenant?.config;
@@ -1691,4 +1707,7 @@ app.listen(PORT, "0.0.0.0", async () => {
   await cargarWhitelistIPs(); // primera carga
   setInterval(cargarWhitelistIPs, 1 * 60 * 1000); // cada 1 minutos
   console.log(`🚀 Servidor escuchando en http://localhost:${PORT}`);
+  if (process.env.DOCS_ENABLED !== "false") {
+    console.log(`📖 Documentación Swagger en http://localhost:${PORT}/docs`);
+  }
 });
